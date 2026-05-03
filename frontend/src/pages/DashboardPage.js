@@ -97,12 +97,13 @@ const DashboardPage = () => {
             Welcome back, {user?.name?.split(" ")[0] || "User"} 👋
           </div>
 
+          {/* ✅ UPDATED HERE */}
           <div className="page-subtitle">
             {isAdmin
-              ? "Admin Overview"
+              ? "Admin Overview (Deep Learning System Monitoring)"
               : isDoctor
-              ? "Doctor Dashboard"
-              : "Your MRI dashboard"}
+              ? "Doctor Dashboard (DL-based Scan Review)"
+              : "Your MRI Dashboard (Deep Learning Analysis)"}
           </div>
         </div>
 
@@ -125,7 +126,7 @@ const DashboardPage = () => {
 
           <div className="stat-card">
             <div className="stat-value">{pendingCount}</div>
-            <div className="stat-label">Pending</div>
+            <div className="stat-label">Pending Review</div>
           </div>
         </div>
       )}
@@ -139,10 +140,16 @@ const DashboardPage = () => {
           <table>
             <tbody>
               {safeScans.map((scan) => (
-                <tr key={scan.id} onClick={() => navigate(`/scans/${scan.id}`)}>
+                <tr
+                  key={scan.id}
+                  onClick={() => navigate(`/scans/${scan.id}`)}
+                  style={{ cursor: "pointer" }}
+                >
                   <td>{scan.patientName}</td>
                   <td>{scan.hasTumor ? "Tumor" : "Clear"}</td>
-                  <td>{scan.confidence}%</td>
+
+                  {/* ✅ UPDATED LABEL */}
+                  <td>{scan.confidence}% (DL Confidence)</td>
                 </tr>
               ))}
             </tbody>

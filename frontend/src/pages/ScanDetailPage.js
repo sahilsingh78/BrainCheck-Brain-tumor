@@ -17,7 +17,6 @@ const ScanDetailPage = () => {
   const [reviewing, setReviewing] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState(false);
 
-  // 🔹 Fetch scan
   useEffect(() => {
     let isMounted = true;
 
@@ -32,7 +31,6 @@ const ScanDetailPage = () => {
         setScan(res.data);
         setNotes(res.data.notes || "");
       } catch (err) {
-        console.error(err);
         if (isMounted) setError("Failed to load scan");
       } finally {
         if (isMounted) setLoading(false);
@@ -46,7 +44,6 @@ const ScanDetailPage = () => {
     };
   }, [id]);
 
-  // 🔹 Review
   const handleReview = async () => {
     if (reviewing) return;
 
@@ -57,15 +54,13 @@ const ScanDetailPage = () => {
       const { data } = await api.put(`/scans/${id}/review`, { notes });
       setScan(data);
       setReviewSuccess(true);
-    } catch (err) {
-      console.error(err);
+    } catch {
       setError("Failed to save review");
     } finally {
       setReviewing(false);
     }
   };
 
-  // 🔹 Loading
   if (loading) {
     return (
       <div className="loading-screen" style={{ height: "60vh" }}>
@@ -75,7 +70,6 @@ const ScanDetailPage = () => {
     );
   }
 
-  // 🔹 Error
   if (error) {
     return (
       <div className="empty-state">
@@ -89,7 +83,6 @@ const ScanDetailPage = () => {
     );
   }
 
-  // 🔹 Not found
   if (!scan) {
     return (
       <div className="empty-state">
@@ -107,10 +100,7 @@ const ScanDetailPage = () => {
       {/* HEADER */}
       <div className="page-header">
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-          <Button
-            className="btn-secondary btn-sm"
-            onClick={() => navigate(-1)}
-          >
+          <Button className="btn-secondary btn-sm" onClick={() => navigate(-1)}>
             ← Back
           </Button>
 
@@ -123,11 +113,7 @@ const ScanDetailPage = () => {
         </div>
 
         <div style={{ display: "flex", gap: 8 }}>
-          <span
-            className={`badge ${
-              scan.hasTumor ? "badge-tumor" : "badge-no-tumor"
-            }`}
-          >
+          <span className={`badge ${scan.hasTumor ? "badge-tumor" : "badge-no-tumor"}`}>
             {scan.hasTumor ? "⚠ Tumor" : "✓ Clear"}
           </span>
 
@@ -137,8 +123,9 @@ const ScanDetailPage = () => {
         </div>
       </div>
 
-      {/* MAIN GRID */}
+      {/* MAIN */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+        
         {/* IMAGE */}
         <div className="card">
           <div style={{ fontWeight: 700, marginBottom: 14 }}>
@@ -146,11 +133,7 @@ const ScanDetailPage = () => {
           </div>
 
           {scan.imageData ? (
-            <img
-              src={scan.imageData}
-              alt="MRI"
-              style={{ width: "100%", borderRadius: 10 }}
-            />
+            <img src={scan.imageData} alt="MRI" style={{ width: "100%", borderRadius: 10 }} />
           ) : (
             <div className="scan-img-placeholder">🧠</div>
           )}
@@ -158,20 +141,18 @@ const ScanDetailPage = () => {
 
         {/* DETAILS */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          
           {/* RESULT */}
-          <div
-            className={`result-box ${
-              scan.hasTumor ? "tumor" : "no-tumor"
-            }`}
-          >
+          <div className={`result-box ${scan.hasTumor ? "tumor" : "no-tumor"}`}>
             <div className="result-icon">
               {scan.hasTumor ? "⚠️" : "✅"}
             </div>
 
             <div className="result-label">{scan.result}</div>
 
+            {/* ✅ UPDATED HERE */}
             <div className="result-confidence">
-              AI Confidence: {scan.confidence || 0}%
+              DL Model Confidence: {scan.confidence || 0}%
             </div>
           </div>
 
@@ -185,9 +166,7 @@ const ScanDetailPage = () => {
                   className="confidence-fill"
                   style={{
                     width: `${scan.confidence || 0}%`,
-                    background: scan.hasTumor
-                      ? "var(--danger)"
-                      : "var(--success)",
+                    background: scan.hasTumor ? "var(--danger)" : "var(--success)",
                   }}
                 />
               </div>
@@ -220,9 +199,7 @@ const ScanDetailPage = () => {
               <div style={{ fontWeight: 700 }}>Doctor Notes</div>
 
               {reviewSuccess && (
-                <div className="alert alert-success">
-                  ✓ Review saved
-                </div>
+                <div className="alert alert-success">✓ Review saved</div>
               )}
 
               <textarea
@@ -247,7 +224,6 @@ const ScanDetailPage = () => {
               <div style={{ fontWeight: 700 }}>
                 Doctor's Notes
               </div>
-
               <p>{scan.notes}</p>
             </div>
           )}
