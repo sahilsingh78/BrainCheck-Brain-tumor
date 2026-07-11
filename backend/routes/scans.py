@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from middleware.auth_middleware import auth_required
 from middleware.role_middleware import require_roles
+from routes.auth import is_guest
 from utils.db import get_db
 from utils.predictor import predict
 from bson import ObjectId, errors as bson_errors
@@ -13,7 +14,7 @@ ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 
-# 🔹 Serialize scan
+#  Serialize scan
 def serialize_scan(scan):
     return {
         "id": str(scan["_id"]),
@@ -59,7 +60,7 @@ def upload_scan(user):
     if len(image_bytes) > MAX_FILE_SIZE:
         return jsonify({"message": "File too large (max 5MB)"}), 400
 
-    # 🔥 Prediction
+    #  Prediction
     try:
         prediction = predict(image_bytes)
     except Exception as e:
@@ -157,6 +158,9 @@ def review_scan(user, scan_id):
 @scans_bp.route("/<scan_id>", methods=["DELETE"])
 @auth_required()
 def delete_scan(user, scan_id):
+    if is_guest(user):
+        return jsonify({"message": "Guest demo account cannot delete scans"}), 403
+
     db = get_db()
 
     try:

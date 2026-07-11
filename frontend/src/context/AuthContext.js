@@ -7,7 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Load user from localStorage
+  //  Load user from localStorage
   useEffect(() => {
     try {
       const saved = localStorage.getItem("bc_user");
@@ -25,7 +25,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // 🔹 Login
+  // Login
   const login = async (email, password) => {
     try {
       const { data } = await api.post("/auth/login", { email, password });
@@ -40,7 +40,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 🔹 Register
+  const guestLogin = async () => {
+    try {
+      const { data } = await api.post("/auth/guest");
+
+      localStorage.setItem("bc_token", data.token);
+      localStorage.setItem("bc_user", JSON.stringify(data.user));
+
+      setUser(data.user);
+      return data.user;
+    } catch (err) {
+      throw err.response?.data?.message || "Guest login failed";
+    }
+  };
+
+  // Register
   const register = async (name, email, password, role) => {
     try {
       const { data } = await api.post("/auth/register", {
@@ -60,14 +74,14 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 🔹 Logout
+  // Logout
   const logout = () => {
     localStorage.removeItem("bc_token");
     localStorage.removeItem("bc_user");
     setUser(null);
   };
 
-  // 🔹 Optional: Refresh user from backend
+  // Optional: Refresh user from backend
   const refreshUser = async () => {
     try {
       const { data } = await api.get("/auth/me");
@@ -84,6 +98,7 @@ export const AuthProvider = ({ children }) => {
         user,
         loading,
         login,
+        guestLogin,
         register,
         logout,
         refreshUser,
