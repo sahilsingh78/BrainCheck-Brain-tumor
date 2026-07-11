@@ -16,6 +16,3 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
-
-# Dataset (brain tumor images)
-dataset/

@@ -4,7 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import Button from "../components/UI/Button";
 
 const LoginPage = () => {
-  const { login } = useAuth();
+  const { login, guestLogin } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -12,6 +12,7 @@ const LoginPage = () => {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [guestLoading, setGuestLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -25,10 +26,25 @@ const LoginPage = () => {
       await login(email, password);
       navigate("/dashboard");
     } catch (err) {
-      // 🔥 works with your updated AuthContext
       setError(typeof err === "string" ? err : "Login failed");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGuestLogin = async () => {
+    if (guestLoading) return;
+
+    setError("");
+    setGuestLoading(true);
+
+    try {
+      await guestLogin();
+      navigate("/dashboard");
+    } catch (err) {
+      setError(typeof err === "string" ? err : "Guest login failed");
+    } finally {
+      setGuestLoading(false);
     }
   };
 
@@ -76,7 +92,6 @@ const LoginPage = () => {
             />
           </div>
 
-          {/* 🔥 Button with loader */}
           <Button
             type="submit"
             className="btn-primary btn-full"
@@ -86,6 +101,39 @@ const LoginPage = () => {
             Sign In
           </Button>
         </form>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            margin: "20px 0 4px",
+          }}
+        >
+          <div style={{ flex: 1, height: 1, background: "var(--border, #e5e7eb)" }} />
+          <span style={{ fontSize: 12, color: "var(--text-2)" }}>OR</span>
+          <div style={{ flex: 1, height: 1, background: "var(--border, #e5e7eb)" }} />
+        </div>
+
+        <Button
+          type="button"
+          className="btn-secondary btn-full"
+          loading={guestLoading}
+          onClick={handleGuestLogin}
+          style={{ marginTop: 8 }}
+        >
+          Continue as Guest (Recruiter Demo)
+        </Button>
+        <p
+          style={{
+            marginTop: 8,
+            textAlign: "center",
+            color: "var(--text-2)",
+            fontSize: 12,
+          }}
+        >
+          Explore the full dashboard instantly — no signup required
+        </p>
 
         {/* Footer */}
         <p

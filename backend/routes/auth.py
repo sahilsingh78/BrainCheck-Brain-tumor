@@ -11,8 +11,15 @@ import datetime
 
 auth_bp = Blueprint("auth", __name__)
 
+GUEST_EMAIL = "guest@braincheck.demo"
+GUEST_NAME = "Guest Recruiter"
 
-# 🔐 Password helpers
+
+def is_guest(user) -> bool:
+    return bool(user) and user.get("email") == GUEST_EMAIL
+
+
+#  Password helpers
 def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 
@@ -21,7 +28,7 @@ def check_password(password: str, hashed: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
 
 
-# 🔹 Serialize user
+#  Serialize user
 def serialize_user(user):
     return {
         "id": str(user["_id"]),
@@ -32,7 +39,7 @@ def serialize_user(user):
     }
 
 
-# 🧠 Helper: validate email/password
+#  Helper: validate email/password
 def validate_register_data(data):
     name = data.get("name", "").strip()
     email = data.get("email", "").strip().lower()
@@ -110,6 +117,34 @@ def login():
         "user": serialize_user(user),
         "token": token
     }), 200
+
+@auth_bp.route("/guest", methods=["POST"])
+def guest_login():
+    # one-click demo login, no signup needed. reuses a single
+    # shared account instead of creating a new one every visit.
+    # destructive actions for this account are blocked in admin.py/scans.py
+    db = get_db()
+
+    user = db.users.find_one({"email": GUEST_EMAIL})
+
+    if not user:
+        user = {
+            "name": GUEST_NAME,
+            "email": GUEST_EMAIL,
+            "password": hash_password(f"guest-{datetime.datetime.utcnow().timestamp()}"),
+            "role": "admin",
+            "createdAt": datetime.datetime.utcnow().isoformat(),
+        }
+        result = db.users.insert_one(user)
+        user["_id"] = result.inserted_id
+
+    token = create_access_token(identity=str(user["_id"]))
+
+    return jsonify({
+        "user": serialize_user(user),
+        "token": token
+    }), 200
+
 
 @auth_bp.route("/me", methods=["GET"])
 @jwt_required()

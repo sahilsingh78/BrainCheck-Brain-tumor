@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from utils.db import get_db
 from bson import ObjectId, errors as bson_errors
+from routes.auth import is_guest
 
 admin_bp = Blueprint("admin", __name__)
 
@@ -87,6 +88,9 @@ def change_role(target_id):
     if not admin:
         return jsonify({"message": "Admin access required"}), 403
 
+    if is_guest(admin):
+        return jsonify({"message": "Guest demo account cannot change user roles"}), 403
+
     if target_id == str(admin["_id"]):
         return jsonify({"message": "You cannot change your own role"}), 400
 
@@ -118,6 +122,9 @@ def delete_user(target_id):
     admin = get_admin()
     if not admin:
         return jsonify({"message": "Admin access required"}), 403
+
+    if is_guest(admin):
+        return jsonify({"message": "Guest demo account cannot delete users"}), 403
 
     if target_id == str(admin["_id"]):
         return jsonify({"message": "You cannot delete yourself"}), 400
