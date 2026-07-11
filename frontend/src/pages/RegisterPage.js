@@ -43,19 +43,16 @@ const RegisterPage = () => {
       value: "patient",
       label: "Patient",
       desc: "Upload and view my MRI scans",
-      icon: "🙋",
     },
     {
       value: "doctor",
       label: "Doctor",
       desc: "Review and annotate patient scans",
-      icon: "👨‍⚕️",
     },
     {
       value: "admin",
       label: "Admin",
       desc: "Manage all users and scans",
-      icon: "⚙️",
     },
   ];
 
@@ -64,7 +61,6 @@ const RegisterPage = () => {
       <div className="auth-card">
         {/* Brand */}
         <div className="auth-brand">
-          <div className="auth-brand-icon">🧠</div>
           <span className="auth-brand-name">
             Brain<span>Check</span>
           </span>
@@ -193,7 +189,7 @@ const RegisterPage = () => {
             </div>
           </div>
 
-          {/* 🔥 Button with loader */}
+          {/*  Button with loader */}
           <Button
             type="submit"
             className="btn-primary btn-full"

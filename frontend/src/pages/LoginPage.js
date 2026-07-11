@@ -53,7 +53,7 @@ const LoginPage = () => {
       <div className="auth-card">
         {/* Brand */}
         <div className="auth-brand">
-          <div className="auth-brand-icon">🧠</div>
+          <div className="auth-brand-icon">B</div>
           <span className="auth-brand-name">
             Brain<span>Check</span>
           </span>
