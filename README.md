@@ -203,7 +203,7 @@ npm start
 <tr>
 <td width="50%" valign="top">
 
-### Backend → Railway
+### Backend → Render
 - Root directory: `backend`
 - Start command:
   ```
